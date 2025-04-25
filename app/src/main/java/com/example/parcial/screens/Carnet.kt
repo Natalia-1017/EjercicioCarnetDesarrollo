@@ -6,10 +6,10 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -28,6 +28,11 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.parcial.R
 import java.net.URLDecoder
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.runtime.saveable.rememberSaveable
+import java.util.*
 
 @Composable
 fun CarnetScreen(
@@ -43,6 +48,25 @@ fun CarnetScreen(
     val decodedRaza = decode(raza)
     val decodedTamano = decode(tamano)
     val decodedUrl = decode(imagenUrl)
+
+    var carnetList by rememberSaveable { mutableStateOf(mutableListOf<Carnet>()) }
+    var isDialogOpen by remember { mutableStateOf(false) }
+    var currentCarnet by remember { mutableStateOf<Carnet?>(null) }
+
+    fun addOrUpdateCarnet(carnet: Carnet) {
+        if (carnetList.contains(carnet)) {
+            // Actualiza el carnet existente
+            val index = carnetList.indexOf(carnet)
+            carnetList[index] = carnet
+        } else {
+            // Añadir el carnet a la lista
+            carnetList.add(carnet)
+        }
+    }
+
+    fun removeCarnet(carnet: Carnet) {
+        carnetList.remove(carnet)
+    }
 
     Column(
         modifier = Modifier
@@ -81,7 +105,6 @@ fun CarnetScreen(
                 ) {
                     // Título
                     TitleText("IDENTIFICACIÓN", 20.sp)
-
 
                     // Imagen circular
                     Image(
@@ -126,6 +149,85 @@ fun CarnetScreen(
                 fontWeight = FontWeight.Bold
             )
         }
+
+        // Botón para editar o eliminar el carnet
+        Spacer(modifier = Modifier.height(16.dp))
+        Row {
+            Button(
+                onClick = {
+                    isDialogOpen = true
+                    currentCarnet = Carnet(decodedNombre, decodedRaza, decodedTamano, decodedUrl)
+                }
+            ) {
+                Text("Editar / Añadir")
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Button(
+                onClick = {
+                    currentCarnet?.let {
+                        removeCarnet(it)
+                    }
+                }
+            ) {
+                Text("Eliminar")
+            }
+        }
+
+        // Mostrar lista de carnets
+        Spacer(modifier = Modifier.height(16.dp))
+        Column {
+            carnetList.forEach { carnet ->
+                Text("${carnet.nombre}, ${carnet.raza}, ${carnet.tamano}")
+            }
+        }
+    }
+
+    // Diálogo para editar o añadir un carnet
+    if (isDialogOpen) {
+        AlertDialog(
+            onDismissRequest = { isDialogOpen = false },
+            title = { Text("Editar / Añadir Carnet") },
+            text = {
+                Column {
+                    OutlinedTextField(
+                        value = currentCarnet?.nombre ?: "",
+                        onValueChange = { currentCarnet = currentCarnet?.copy(nombre = it) },
+                        label = { Text("Nombre") }
+                    )
+                    OutlinedTextField(
+                        value = currentCarnet?.raza ?: "",
+                        onValueChange = { currentCarnet = currentCarnet?.copy(raza = it) },
+                        label = { Text("Raza") }
+                    )
+                    OutlinedTextField(
+                        value = currentCarnet?.tamano ?: "",
+                        onValueChange = { currentCarnet = currentCarnet?.copy(tamano = it) },
+                        label = { Text("Tamaño") }
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        currentCarnet?.let {
+                            addOrUpdateCarnet(it)
+                            isDialogOpen = false
+                        }
+                    }
+                ) {
+                    Text("Guardar")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { isDialogOpen = false }
+                ) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
 }
 
@@ -163,3 +265,11 @@ fun InfoText(text: String) {
         )
     )
 }
+
+// Datos del carnet
+data class Carnet(
+    val nombre: String,
+    val raza: String,
+    val tamano: String,
+    val imagenUrl: String
+)
