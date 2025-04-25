@@ -1,17 +1,23 @@
 package com.example.parcial.screens
 
 import android.widget.Toast
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.parcial.R
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -28,31 +34,75 @@ fun FormularioScreen(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .background(Color(0xFFE0F2F7)),
         contentAlignment = Alignment.Center
     ) {
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
             shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD)),
-            elevation = CardDefaults.cardElevation(8.dp)
+            elevation = CardDefaults.cardElevation(10.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White)
         ) {
-            Column(modifier = Modifier.padding(24.dp)) {
-                Text(
-                    "Registrar Mascota",
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = Color(0xFF1565C0)
+            Column(
+                modifier = Modifier
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Image(
+                        painter = painterResource(id = R.drawable.logo_mascota),
+                        contentDescription = "Logo Mascota",
+                        modifier = Modifier.size(36.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        "Registro de Mascota",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF1565C0)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                OutlinedTextField(
+                    value = nombre,
+                    onValueChange = { nombre = it },
+                    label = { Text("Nombre") },
+                    modifier = Modifier.fillMaxWidth()
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                OutlinedTextField(
+                    value = raza,
+                    onValueChange = { raza = it },
+                    label = { Text("Raza") },
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-                OutlinedTextField(value = nombre, onValueChange = { nombre = it }, label = { Text("Nombre") }, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = raza, onValueChange = { raza = it }, label = { Text("Raza") }, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = tamano, onValueChange = { tamano = it }, label = { Text("Tamaño") }, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = edad, onValueChange = { edad = it }, label = { Text("Edad") }, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = imagenUrl, onValueChange = { imagenUrl = it }, label = { Text("URL de imagen") }, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(
+                    value = tamano,
+                    onValueChange = { tamano = it },
+                    label = { Text("Tamaño") },
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-                Spacer(modifier = Modifier.height(20.dp))
+                OutlinedTextField(
+                    value = edad,
+                    onValueChange = { edad = it },
+                    label = { Text("Edad") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = imagenUrl,
+                    onValueChange = { imagenUrl = it },
+                    label = { Text("URL de imagen") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
                     onClick = {
@@ -67,9 +117,12 @@ fun FormularioScreen(navController: NavController) {
                             Toast.makeText(context, "Completa los campos obligatorios", Toast.LENGTH_SHORT).show()
                         }
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1565C0))
                 ) {
-                    Text("Registrar Mascota")
+                    Text("Registrar Mascota", color = Color.White)
                 }
             }
         }
